@@ -14,7 +14,7 @@ jobs:
     environment:
       # 這個名字必須跟 repo 的 Environments 名稱一樣
       name: series-5939
-      url: https://ithelp.ithome.com.tw/users/20077241/ironman/${{ vars.IRONMAN_ID }}
+      url: https://ithelp.ithome.com.tw/users/20129220/ironman/${{ vars.IRONMAN_ID }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
