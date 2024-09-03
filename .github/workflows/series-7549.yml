@@ -4,7 +4,7 @@ on:
   schedule:
     # timezone: UTC
     # 避開整點時間，因為有可能會有時間上的延誤
-    - cron: '10 16 * * *'
+    - cron: '45 00 * * *'
 
 jobs:
   deploy:
