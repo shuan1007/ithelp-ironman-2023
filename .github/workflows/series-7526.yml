@@ -1,0 +1,52 @@
+name: (7526) Gemini
+on:
+  workflow_dispatch:
+  schedule:
+    # timezone: UTC
+    # 避開整點時間，因為有可能會有時間上的延誤
+    - cron: '05 16 * * *'
+
+jobs:
+  deploy:
+    # 避免被 fork 的 repository 觸發，請改成自己的 GitHub 帳號
+    if: github.repository_owner == 'shuan1007'
+    environment:
+      # 這個名字必須跟 repo 的 Environments 名稱一樣
+      name: series-7526
+      url: https://ithelp.ithome.com.tw/users/20129220/ironman/${{ vars.IRONMAN_ID }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+    - name: 印出收到的參數
+      run: |
+        echo 'env=${{ toJSON(env) }}'
+        echo 'github=${{ toJSON(github) }}'
+        echo 'inputs=${{ toJSON(inputs) }}'
+        echo 'job=${{ toJSON(job) }}'
+        echo 'runner=${{ toJSON(runner) }}'
+        echo 'secrets=${{ toJSON(secrets) }}'
+        echo 'steps=${{ toJSON(steps) }}'
+        echo 'vars=${{ toJSON(vars) }}'
+    - uses: actions/checkout@v3
+    - name: 安裝 Node.js 與 yarn
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+        cache: 'yarn'
+    - name: 建立環境及檢查
+      run: |
+        yarn
+        yarn lint
+    - name: 自動發文
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 600
+        max_attempts: 3
+        retry_on: error
+        command: yarn ironman
+      env:
+        IRONMAN_ID: ${{ vars.IRONMAN_ID }}
+        ARTICLE_CSV: ${{ secrets.ARTICLE_CSV }}
+        IRONMAN_TOKEN: ${{ secrets.IRONMAN_TOKEN }}
+        ITHELP_COOKIE: ${{ secrets.ITHELP_COOKIE }}
+        LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
